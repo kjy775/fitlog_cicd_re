@@ -139,7 +139,6 @@ function Main() {
         };
 
         fetchNoticeList();
-        console.log('CI/CD Test...........')
     }, []);
 
     // ==========================================

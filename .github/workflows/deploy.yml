@@ -1,0 +1,28 @@
+name: React Client
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH로 EC2 접속하여 작업
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+
+          script_stop: true
+          script: |
+            cd /home/ubuntu/fitlog_cicd_re
+            git pull origin main
+            docker stop fitlog_cicd_re || true
+            docker rm fitlog_cicd_re || true
+
+            docker build --no-cache -t fitlog_cicd_re .
+            docker run -d --name fitlog_cicd_re -p 80:80 fitlog_cicd_re
